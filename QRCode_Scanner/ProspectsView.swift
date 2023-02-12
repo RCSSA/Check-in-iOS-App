@@ -30,29 +30,13 @@ struct ProspectsView: View {
                             .foregroundColor(.secondary)
                     }
                     .swipeActions {
-                        if prospect.isContacted {
                             Button {
-                                prospects.toggle(prospect)
+                                prospects.delete(prospect)
                             } label: {
-                                Label("Mark Uncontacted", systemImage: "person.crop.circle.badge.xmark")
+                                Label("Mark removed", systemImage: "trash.slash")
                             }
-                            .tint(.blue)
-                        } else {
-                            Button {
-                                prospects.toggle(prospect)
-                            } label: {
-                                Label("Mark Contacted", systemImage: "person.crop.circle.fill.badge.checkmark")
-                            }
-                            .tint(.green)
-
-                            Button {
-                                addNotification(for: prospect)
-                            } label: {
-                                Label("Remind Me", systemImage: "bell")
-                            }
-                            .tint(.orange)
+                            .tint(.red)
                         }
-                    }
                 }
             }
             .navigationTitle(title)
@@ -64,7 +48,9 @@ struct ProspectsView: View {
                 }
             }
             .sheet(isPresented: $isShowingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "Paul Hudson\npaul@hackingwithswift.com", completion: handleScan)
+                CodeScannerView(codeTypes: [.qr], simulatedData: "Ge Huang\ngh31@rice.edu", completion: handleScan)
+//                CodeScannerView(codeTypes: [.qr], simulatedData: "Lynn Niu\nyn23@rice.edu", completion: handleScan)
+//                CodeScannerView(codeTypes: [.qr], simulatedData: "Kexin Shen\nks103@rice.edu", completion: handleScan)
             }
         }
     }
@@ -72,7 +58,7 @@ struct ProspectsView: View {
     var title: String {
         switch filter {
         case .none:
-            return "Everyone"
+            return "Checked In"
         case .contacted:
             return "Contacted people"
         case .uncontacted:
@@ -145,6 +131,8 @@ struct ProspectsView: View {
 struct ProspectsView_Previews: PreviewProvider {
     static var previews: some View {
         ProspectsView(filter: .none)
+            .environmentObject(Prospects())
+        ProspectsView(filter: .contacted)
             .environmentObject(Prospects())
     }
 }

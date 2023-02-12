@@ -17,15 +17,15 @@ struct ContentView: View {
                     Label("Checked In", systemImage: "person.3")
                 }
 
-            ProspectsView(filter: .contacted)
-                .tabItem {
-                    Label("Contacted", systemImage: "checkmark.circle")
-                }
-
-            ProspectsView(filter: .uncontacted)
-                .tabItem {
-                    Label("Uncontacted", systemImage: "questionmark.diamond")
-                }
+//            ProspectsView(filter: .contacted)
+//                .tabItem {
+//                    Label("Contacted", systemImage: "checkmark.circle")
+//                }
+//
+//            ProspectsView(filter: .uncontacted)
+//                .tabItem {
+//                    Label("Uncontacted", systemImage: "questionmark.diamond")
+//                }
 
             MeView()
                 .tabItem {
