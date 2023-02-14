@@ -10,8 +10,10 @@ import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 struct MeView: View {
-    @State private var name = "James"
-    @State private var emailAddress = "xxx@xxx"
+//    @State private var name = "James"
+//    @State private var emailAddress = "xxx@xxx"
+    @State private var name = "KKK"
+    @State private var emailAddress = "ks103@rice.edu"
     @State private var qrCode = UIImage()
 
     let context = CIContext()
