@@ -4,10 +4,21 @@
 //
 //  Created by Paul Hudson on 03/01/2022.
 //
-
 import CodeScanner
 import SwiftUI
 import UserNotifications
+
+func convertStringToDictionary(text: String) -> [String:String]? {
+   if let data = text.data(using: .utf8) {
+       do {
+           let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:String]
+           return json
+       } catch {
+           print("Something went wrong")
+       }
+   }
+   return nil
+}
 
 struct ProspectsView: View {
     enum FilterType {
@@ -48,7 +59,7 @@ struct ProspectsView: View {
                 }
             }
             .sheet(isPresented: $isShowingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "Ge Huang\ngh31@rice.edu", completion: handleScan)
+                CodeScannerView(codeTypes: [.qr], simulatedData: "YWxsZW5oczU2QHJpY2UuZWR1", completion: handleScan)
 //                CodeScannerView(codeTypes: [.qr], simulatedData: "Lynn Niu\nyn23@rice.edu", completion: handleScan)
 //                CodeScannerView(codeTypes: [.qr], simulatedData: "Kexin Shen\nks103@rice.edu", completion: handleScan)
             }
@@ -82,13 +93,34 @@ struct ProspectsView: View {
 
         switch result {
         case .success(let result):
-            let details = result.string.components(separatedBy: "\n")
-            guard details.count == 2 else { return }
+            let details = result.string
+            print("result", result)
+            let url = URL(string: "https://script.google.com/macros/s/AKfycby3UO_ErM9nd-0N5C1KhqttkyfzuRcGhCjgsUXI_GYWG4lRiiVFKcnZfxnAaADazO0o/exec?action=get&id=" + details)!
 
-            let person = Prospect()
-            person.name = details[0]
-            person.emailAddress = details[1]
-            prospects.add(person)
+            let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
+                guard let data = data else { return }
+                let res_str = String(data: data, encoding: .utf8)!
+                print(res_str)
+                let data_dic = convertStringToDictionary(text: res_str)
+                let res_status = data_dic!["status"] ?? "ERROR"
+                if (res_status == "success") {
+                    let person = Prospect()
+                    person.name = data_dic!["name"] ?? "ERROR"
+                    person.emailAddress = data_dic!["email"] ?? "ERROR"
+                    prospects.add(person)
+                }
+                else {
+                    print("ERROR!! USER NOT FOUND!")
+                }
+            }
+
+            task.resume()
+//            guard details.count == 2 else { return }
+//
+//            let person = Prospect()
+//            person.name = details[0]
+//            person.emailAddress = details[1]
+//            prospects.add(person)
         case .failure(let error):
             print("Scanning failed: \(error.localizedDescription)")
         }
