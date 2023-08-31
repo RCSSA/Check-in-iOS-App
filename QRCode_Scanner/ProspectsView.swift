@@ -27,6 +27,7 @@ struct ProspectsView: View {
 
     @EnvironmentObject var prospects: Prospects
     @State private var isShowingScanner = false
+    @State private var showingAlert = false
 
     let filter: FilterType
 
@@ -60,9 +61,10 @@ struct ProspectsView: View {
             }
             .sheet(isPresented: $isShowingScanner) {
                 CodeScannerView(codeTypes: [.qr], simulatedData: "YWxsZW5oczU2QHJpY2UuZWR1", completion: handleScan)
-//                CodeScannerView(codeTypes: [.qr], simulatedData: "Lynn Niu\nyn23@rice.edu", completion: handleScan)
-//                CodeScannerView(codeTypes: [.qr], simulatedData: "Kexin Shen\nks103@rice.edu", completion: handleScan)
             }
+            .alert("ERROR: Already checked in or not registered", isPresented: $showingAlert) {
+                        Button("OK", role: .cancel) { }
+                    }
         }
     }
 
@@ -95,7 +97,7 @@ struct ProspectsView: View {
         case .success(let result):
             let details = result.string
             print("result", result)
-            let url = URL(string: "https://script.google.com/macros/s/AKfycby3UO_ErM9nd-0N5C1KhqttkyfzuRcGhCjgsUXI_GYWG4lRiiVFKcnZfxnAaADazO0o/exec?action=get&id=" + details)!
+            let url = URL(string: "https://script.google.com/macros/s/AKfycbwk_SybuCcIV26eIPASozdLdbo2QKh1XE1MNTwUjiPLYoz0upEIQzQ9txBKf5rsKdarCg/exec?action=get&id=" + details)!
 
             let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
                 guard let data = data else { return }
@@ -111,6 +113,7 @@ struct ProspectsView: View {
                 }
                 else {
                     print("ERROR!! USER NOT FOUND!")
+                    showingAlert = true
                 }
             }
 
