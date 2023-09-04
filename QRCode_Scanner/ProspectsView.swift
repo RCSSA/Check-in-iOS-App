@@ -20,28 +20,47 @@ func convertStringToDictionary(text: String) -> [String:String]? {
    return nil
 }
 
+// Loading View
+struct LoaderView: View {
+    var tintColor: Color = .blue
+    var scaleSize: CGFloat = 1.0
+    
+    var body: some View {
+        ProgressView()
+            .scaleEffect(scaleSize, anchor: .center)
+            .progressViewStyle(CircularProgressViewStyle(tint: tintColor))
+    }
+}
+
+
 struct ProspectsView: View {
     enum FilterType {
         case none, contacted, uncontacted
     }
 
     @EnvironmentObject var prospects: Prospects
-    @State private var isShowingScanner = false
-    @State private var showingAlert = false
+    @State private var isShowingScanner: Bool = false
+    @State private var showingAlert: Bool = false
+    @State private var isHideLoader: Bool = true
 
     let filter: FilterType
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(filteredProspects) { prospect in
-                    VStack(alignment: .leading) {
-                        Text(prospect.name)
-                            .font(.headline)
-                        Text(prospect.emailAddress)
-                            .foregroundColor(.secondary)
-                    }
-                    .swipeActions {
+        VStack {
+            if (!isHideLoader)
+            {
+                LoaderView(tintColor: .blue, scaleSize: 1.0).padding(.bottom)
+            }
+            NavigationView {
+                List {
+                    ForEach(filteredProspects) { prospect in
+                        VStack(alignment: .leading) {
+                            Text(prospect.name)
+                                .font(.headline)
+                            Text(prospect.emailAddress)
+                                .foregroundColor(.secondary)
+                        }
+                        .swipeActions {
                             Button {
                                 prospects.delete(prospect)
                             } label: {
@@ -49,22 +68,23 @@ struct ProspectsView: View {
                             }
                             .tint(.red)
                         }
-                }
-            }
-            .navigationTitle(title)
-            .toolbar {
-                Button {
-                    isShowingScanner = true
-                } label: {
-                    Label("Scan", systemImage: "qrcode.viewfinder")
-                }
-            }
-            .sheet(isPresented: $isShowingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "YWxsZW5oczU2QHJpY2UuZWR1", completion: handleScan)
-            }
-            .alert("ERROR: Already checked in or not registered", isPresented: $showingAlert) {
-                        Button("OK", role: .cancel) { }
                     }
+                }
+                .navigationTitle(title)
+                .toolbar {
+                    Button {
+                        isShowingScanner = true
+                    } label: {
+                        Label("Scan", systemImage: "qrcode.viewfinder")
+                    }
+                }
+                .sheet(isPresented: $isShowingScanner) {
+                    CodeScannerView(codeTypes: [.qr], simulatedData: "YWxsZW5oczU2QHJpY2UuZWR1", completion: handleScan)
+                }
+                .alert("ERROR: Already checked in or not registered", isPresented: $showingAlert) {
+                    Button("OK", role: .cancel) { }
+                }
+            }
         }
     }
 
@@ -96,9 +116,11 @@ struct ProspectsView: View {
         switch result {
         case .success(let result):
             let details = result.string
+            
+            isHideLoader = false
+            print("isHideLoader: ", isHideLoader)
             print("result", result)
             let url = URL(string: "https://script.google.com/macros/s/AKfycbwk_SybuCcIV26eIPASozdLdbo2QKh1XE1MNTwUjiPLYoz0upEIQzQ9txBKf5rsKdarCg/exec?action=get&id=" + details)!
-
             let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
                 guard let data = data else { return }
                 let res_str = String(data: data, encoding: .utf8)!
@@ -115,15 +137,10 @@ struct ProspectsView: View {
                     print("ERROR!! USER NOT FOUND!")
                     showingAlert = true
                 }
+                isHideLoader = true
             }
 
             task.resume()
-//            guard details.count == 2 else { return }
-//
-//            let person = Prospect()
-//            person.name = details[0]
-//            person.emailAddress = details[1]
-//            prospects.add(person)
         case .failure(let error):
             print("Scanning failed: \(error.localizedDescription)")
         }
