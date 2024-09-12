@@ -116,11 +116,11 @@ struct ProspectsView: View {
         switch result {
         case .success(let result):
             let details = result.string
-            
+
             isHideLoader = false
             print("isHideLoader: ", isHideLoader)
             print("result", result)
-            let url = URL(string: "https://script.google.com/macros/s/AKfycbwk_SybuCcIV26eIPASozdLdbo2QKh1XE1MNTwUjiPLYoz0upEIQzQ9txBKf5rsKdarCg/exec?action=get&id=" + details)!
+            let url = URL(string: "https://script.google.com/macros/s/AKfycbz0vCSJKBsMKsOu-KPGt1mzkp6XhxrpjUHpDl0dAUmP7rcvZhiWBUxvMInqPkUoZxaa/exec?action=get&id=" + details)!
             let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
                 guard let data = data else { return }
                 let res_str = String(data: data, encoding: .utf8)!
