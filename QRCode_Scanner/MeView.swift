@@ -12,8 +12,9 @@ import SwiftUI
 struct MeView: View {
 //    @State private var name = "James"
 //    @State private var emailAddress = "xxx@xxx"
-    @State private var name = "KKK"
-    @State private var emailAddress = "ks103@rice.edu"
+//    @State private var name = "tim"
+//    @State private var emailAddress = "wz51@rice.edu"
+    @State private var uuid = "1234"
     @State private var qrCode = UIImage()
 
     let context = CIContext()
@@ -22,13 +23,16 @@ struct MeView: View {
     var body: some View {
         NavigationView {
             Form {
-                TextField("Name", text: $name)
-                    .textContentType(.name)
-                    .font(.title)
-
-                TextField("Email address", text: $emailAddress)
-                    .textContentType(.emailAddress)
-                    .font(.title)
+//                TextField("Name", text: $name)
+//                    .textContentType(.name)
+//                    .font(.title)
+//
+//                TextField("Email address", text: $emailAddress)
+//                    .textContentType(.emailAddress)
+//                    .font(.title)
+                Text("UUID: \(uuid)")
+                        .font(.title)
+                        .padding()
 
                 Image(uiImage: qrCode)
                     .resizable()
@@ -46,13 +50,13 @@ struct MeView: View {
             }
             .navigationTitle("Your code")
             .onAppear(perform: updateCode)
-            .onChange(of: name) { _ in updateCode() }
-            .onChange(of: emailAddress) { _ in updateCode() }
+//            .onChange(of: name) { _ in updateCode() }
+//            .onChange(of: emailAddress) { _ in updateCode() }
         }
     }
 
     func updateCode() {
-        qrCode = generateQRCode(from: "\(name)\n\(emailAddress)")
+        qrCode = generateQRCode(from: "\(uuid)")
     }
 
     func generateQRCode(from string: String) -> UIImage {
