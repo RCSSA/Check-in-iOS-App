@@ -119,12 +119,12 @@ struct ProspectsView: View {
 
             isHideLoader = false
             print("isHideLoader: ", isHideLoader)
-            print("result", result)
-            let url = URL(string: "https://script.google.com/macros/s/AKfycbz0vCSJKBsMKsOu-KPGt1mzkp6XhxrpjUHpDl0dAUmP7rcvZhiWBUxvMInqPkUoZxaa/exec?action=get&id=" + details)!
+            print("details", details)
+            let url = URL(string: "https://script.google.com/macros/s/AKfycbyM3cA5Ec_mmFqmVGfgJssx-3BkYyyQoBb99it08tthCCPBFICbkB0cb4fR4U87cXM/exec?action=get&id=" + details)!
             let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
                 guard let data = data else { return }
                 let res_str = String(data: data, encoding: .utf8)!
-                print(res_str)
+                print("res_str", res_str)
                 let data_dic = convertStringToDictionary(text: res_str)
                 let res_status = data_dic!["status"] ?? "ERROR"
                 if (res_status == "success") {
